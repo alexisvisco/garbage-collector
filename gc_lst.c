@@ -31,7 +31,8 @@ void		gc_list_rm(t_gc_list **begin_list, size_t index)
 			if (prev)
 				prev->next = node->next;
 			else
-				*lst = node->next;
+				*begin_list = node->next;
+			printf("something was remove !\n");
 			free(node);
 			return ;
 		}

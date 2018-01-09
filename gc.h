@@ -8,6 +8,10 @@
 
 # define P_MAP_SIZE 64
 
+# ifndef GC_PTR_LIMIT
+#  define GC_PTR_LIMIT 10
+# endif
+
 typedef struct  		s_gc_ptr {
   uintptr_t          	start;
   size_t				size;

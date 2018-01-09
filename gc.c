@@ -33,8 +33,10 @@ void	*gc_alloc(size_t size)
 		.start = (uintptr_t) ptr,
 		.size = size
 	});
-	printf("ptr %llu\n", ptr);
 	GC_G.pointer_nb++;
+	printf("Limit: %d\n", GC_PTR_LIMIT);
+	if (GC_G.pointer_nb > GC_PTR_LIMIT)
+		gc_run();
 	return (ptr);
 }
 
@@ -118,11 +120,10 @@ void 	gc_run()
 	size_t	size;
 	uint8_t	*mark_bits;
 
-	size = GC_G.pointer_nb / 8;
+	size = (GC_G.pointer_nb / 8) + GC_G.pointer_nb % 8 != 0;
 	mark_bits = alloca(size);
 	while (size--)
 		mark_bits[size] = 0;
 	gc_mark_stack(mark_bits);
-	printf("%#x\n", markBits[0]);
 	gc_sweep(mark_bits);
 }
