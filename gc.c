@@ -4,7 +4,7 @@
 #define HASH(ptr) ((uintptr_t)ptr >> 3)
 #define SET_BIT(l, i, v) (l[i/8] |= 1 << (i % 8))
 #define GET_BIT(l, i) ((l[i/8] >> (i % 8)) & 1)
-#define SWAP(type, a,b) { type tmp; tmp = a; a = b; b = tmp; }
+#define SWAP(type, a, b) { type tmp; tmp = a; a = b; b = tmp; }
 
 t_gc GC_G = (t_gc) { .ref_count = 0 };
 
@@ -38,6 +38,19 @@ void	*gc_alloc(size_t size)
 	if (GC_G.pointer_nb > GC_G.limit)
 		gc_run();
 	return (ptr);
+}
+
+void	gc_free(void *ptr)
+{
+	t_gc_list *lst;
+
+	lst = GC_G.pointer_map[HASH(ptr) % P_MAP_SIZE];
+	if (lst && gc_list_exist(lst, (uintptr_t)lst))
+	{
+		gc_list_rm(&lst, (uintptr_t)lst);
+		GC_G.pointer_nb--;
+		free(ptr);
+	}
 }
 
 size_t	gc_ptr_index(uintptr_t ptr, t_gc_list **e)
@@ -106,6 +119,7 @@ void	gc_sweep(uint8_t *mark_bits)
 				free((void *)e->data.start);
 				e = e->next;
 				gc_list_rm(&GC_G.pointer_map[i], k);
+				GC_G.pointer_nb--;
 			}
 			else
 				e = e->next;

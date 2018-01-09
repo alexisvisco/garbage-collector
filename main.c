@@ -4,7 +4,7 @@
 int lol() {
 	void** hello = gc_alloc(10);
 	*hello = gc_alloc(11);
-
+	gc_free(*hello);
 }
 
 int   main(int argc, char *argv[])

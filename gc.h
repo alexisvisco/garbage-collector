@@ -36,10 +36,12 @@ size_t					gc_ptr_index(uintptr_t ptr, t_gc_list **e);
 void					gc_mark_stack(uint8_t *mark_bits);
 void					gc_run();
 void					gc_sweep(uint8_t *mark_bits);
+void					gc_free(void *ptr);
 
 
 void					gc_list_push(t_gc_list **begin_list, t_gc_ptr data);
 void					gc_list_rm(t_gc_list **begin_list, size_t index);
+int						gc_list_exist(t_gc_list *begin_list, uintptr_t ptr);
 
 
 #endif

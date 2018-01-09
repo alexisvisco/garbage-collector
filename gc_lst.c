@@ -1,5 +1,16 @@
 #include "gc.h"
 
+int		gc_list_exist(t_gc_list *begin_list, uintptr_t ptr)
+{
+	while (begin_list)
+	{
+		if (begin_list->data.start == ptr)
+			return (1);
+		begin_list = begin_list->next;
+	}
+	return (0);
+}
+
 void	gc_list_push(t_gc_list **begin_list, t_gc_ptr data)
 {
 	t_gc_list *elem;
