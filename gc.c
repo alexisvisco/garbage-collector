@@ -7,14 +7,14 @@
 
 t_gc GC_G = (t_gc) { .ref_count = 0 };
 
-void	gc_init()
+void	gc_init(void * ptr)
 {
   if (GC_G.ref_count)
     GC_G.ref_count++;
   else
   {
     GC_G = (t_gc) {
-      .stack_start = STACK_PT,
+      .stack_start = ptr,
       .pointer_map = { NULL },
       .pointer_nb = 0,
       .ref_count = 1
@@ -32,6 +32,7 @@ void	*gc_alloc(size_t size)
 		.start = (uintptr_t) ptr,
 		.size = size
 	});
+	printf("ptr %llu\n", ptr);
 	GC_G.pointer_nb++;
 	return (ptr);
 }
@@ -55,7 +56,7 @@ size_t	gc_ptr_index(uintptr_t ptr)
 			j++;
 		}
 	}
-	return (-1)
+	return (-1);
 }
 
 void	gc_mark(uint8_t *mark_bits)
@@ -65,11 +66,11 @@ void	gc_mark(uint8_t *mark_bits)
 	size_t		index;
 
 	start = GC_G.stack_start;
-	end = STACK_PT;
+	end = (uint8_t *) STACK_PT;
 	if (start > end) SWAP(uint8_t *, start, end)
 	while (start < end)
 	{
-		index = gc_ptr_index((uintptr_t) start)
+		index = gc_ptr_index((uintptr_t)*((void **)start));
 		if (index != -1)
 			SET_BIT(mark_bits, index, 1);
 		start++;
