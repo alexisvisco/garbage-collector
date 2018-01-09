@@ -3,6 +3,7 @@
 #define STACK_PT ({ char sp; &sp; })
 #define HASH(ptr) ((uintptr_t)ptr >> 3)
 #define SET_BIT(l, i, v) (l[i/8] |= 1 << (i % 8))
+#define GET_BIT(l, i) ((l[i/8] >> (i % 8)) & 1)
 #define SWAP(type, a,b) { type tmp; tmp = a; a = b; b = tmp; }
 
 t_gc GC_G = (t_gc) { .ref_count = 0 };
@@ -37,10 +38,57 @@ void	*gc_alloc(size_t size)
 	return (ptr);
 }
 
-size_t	gc_ptr_index(uintptr_t ptr)
+size_t	gc_ptr_index(uintptr_t ptr, t_gc_list **e)
 {
 	int			i;
 	int			j;
+
+	i = -1;
+	j = 0;
+	while (++i < P_MAP_SIZE)
+	{
+		*e = GC_G.pointer_map[i];
+		while (*e)
+		{
+			if (ptr >= (*e)->data.start &&
+			(*e)->data.start + (*e)->data.size >= ptr)
+				return (j);
+			*e = (*e)->next;
+			j++;
+		}
+	}
+	return (-1);
+}
+
+void	gc_mark_stack(uint8_t *mark_bits)
+{
+	gc_mark(mark_bits, GC_G.stack_start, (uint8_t *) STACK_PT);
+}
+
+void	gc_mark(uint8_t *mark_bits, uint8_t *start, uint8_t *end)
+{
+	size_t		index;
+	t_gc_list	*e;
+
+	if (start > end) SWAP(uint8_t *, start, end)
+	while (start < end)
+	{
+		index = gc_ptr_index((uintptr_t)*((void **)start), &e);
+		if (index != -1)
+		{
+			SET_BIT(mark_bits, index, 1);
+			gc_mark(mark_bits, (uint8_t *)(e->data.start),
+							(uint8_t *)(e->data.start + e->data.size));
+		}
+		start++;
+	}
+}
+
+void	gc_sweep(uint8_t *mark_bits)
+{
+	int			i;
+	int			j;
+	int			k;
 	t_gc_list	*e;
 
 	i = -1;
@@ -48,31 +96,33 @@ size_t	gc_ptr_index(uintptr_t ptr)
 	while (++i < P_MAP_SIZE)
 	{
 		e = GC_G.pointer_map[i];
+		k = 0;
 		while (e)
 		{
-			if (ptr >= e->data.start && e->data.start + e->data.size >= ptr)
-				return (j);
-			e = e->next;
+			if (GET_BIT(mark_bits, j) == 0)
+			{
+				free((void *)e->data.start);
+				e = e->next;
+				gc_list_rm(&GC_G.pointer_map[i], k);
+			}
+			else
+				e = e->next;
 			j++;
+			k++;
 		}
 	}
-	return (-1);
 }
 
-void	gc_mark(uint8_t *mark_bits)
+void 	gc_run()
 {
-	uint8_t		*start;
-	uint8_t		*end;
-	size_t		index;
+	size_t	size;
+	uint8_t	*mark_bits;
 
-	start = GC_G.stack_start;
-	end = (uint8_t *) STACK_PT;
-	if (start > end) SWAP(uint8_t *, start, end)
-	while (start < end)
-	{
-		index = gc_ptr_index((uintptr_t)*((void **)start));
-		if (index != -1)
-			SET_BIT(mark_bits, index, 1);
-		start++;
-	}
+	size = GC_G.pointer_nb / 8;
+	mark_bits = alloca(size);
+	while (size--)
+		mark_bits[size] = 0;
+	gc_mark_stack(mark_bits);
+	printf("%#x\n", markBits[0]);
+	gc_sweep(mark_bits);
 }

@@ -14,23 +14,29 @@ void	gc_list_push(t_gc_list **begin_list, t_gc_ptr data)
 	*begin_list = elem;
 }
 
-int		gc_list_size(t_gc_list *begin_list)
+void		gc_list_rm(t_gc_list **begin_list, size_t index)
 {
-	size_t i;
+	t_gc_list	*node;
+	t_gc_list	*prev;
+	size_t		i;
 
-	if (!begin_list)
-		return (0);
-	i = 1;
-	while ((begin_list = begin_list->next))
+	if ((node = *begin_list) == NULL)
+		return ;
+	prev = NULL;
+	i = 0;
+	while (node)
+	{
+		if (i == index)
+		{
+			if (prev)
+				prev->next = node->next;
+			else
+				*lst = node->next;
+			free(node);
+			return ;
+		}
+		prev = node;
+		node = node->next;
 		i++;
-	return (i);
-}
-
-t_gc_list	*gc_list_at(t_gc_list *begin_list, size_t nbr)
-{
-	if (nbr == 0)
-		return (begin_list);
-	while (--nbr && begin_list && begin_list->next)
-		begin_list = begin_list->next;
-	return (nbr ? 0 : begin_list->next);
+	}
 }
