@@ -8,7 +8,7 @@
 
 t_gc GC_G = (t_gc) { .ref_count = 0 };
 
-void	gc_init(void * ptr)
+void	gc_init(void * ptr, size_t limit)
 {
   if (GC_G.ref_count)
     GC_G.ref_count++;
@@ -18,7 +18,8 @@ void	gc_init(void * ptr)
       .stack_start = ptr,
       .pointer_map = { NULL },
       .pointer_nb = 0,
-      .ref_count = 1
+      .ref_count = 1,
+	  .limit = limit
     };
   }
 }
@@ -34,8 +35,7 @@ void	*gc_alloc(size_t size)
 		.size = size
 	});
 	GC_G.pointer_nb++;
-	printf("Limit: %d\n", GC_PTR_LIMIT);
-	if (GC_G.pointer_nb > GC_PTR_LIMIT)
+	if (GC_G.pointer_nb > GC_G.limit)
 		gc_run();
 	return (ptr);
 }

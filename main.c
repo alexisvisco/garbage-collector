@@ -1,5 +1,3 @@
-#define GC_PTR_LIMIT 1
-
 #include "gc.h"
 
 
@@ -11,9 +9,8 @@ int lol() {
 
 int   main(int argc, char *argv[])
 {
-	gc_init(&argc);
-	printf("Start stack: %d %d\n", GC_G.stack_start, &argc);
-
+	gc_init(&argc, 1);
 	lol();
 	gc_alloc(1);
+
 }

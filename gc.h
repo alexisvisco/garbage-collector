@@ -8,10 +8,6 @@
 
 # define P_MAP_SIZE 64
 
-# ifndef GC_PTR_LIMIT
-#  define GC_PTR_LIMIT 10
-# endif
-
 typedef struct  		s_gc_ptr {
   uintptr_t          	start;
   size_t				size;
@@ -27,12 +23,13 @@ typedef struct  		s_gc {
   void          		*stack_start;
   t_gc_list     		*pointer_map[P_MAP_SIZE];
   size_t				pointer_nb;
+  size_t				limit;
   size_t				ref_count;
 }               		t_gc;
 
 extern t_gc GC_G;
 
-void					gc_init(void *ptr);
+void					gc_init(void * ptr, size_t limit);
 void					*gc_alloc(size_t size);
 void					gc_mark(uint8_t *mark_bits, uint8_t *s, uint8_t *e);
 size_t					gc_ptr_index(uintptr_t ptr, t_gc_list **e);
