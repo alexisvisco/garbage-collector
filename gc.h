@@ -6,7 +6,7 @@
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/10 13:16:08 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 14:26:54 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/01/10 15:36:39 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -59,6 +59,7 @@ void					gc_free(void *ptr);
 void					gc_destroy(void);
 
 void					swap_ptr(uint8_t *a, uint8_t *b);
+void					debug_pointer_list(void);
 
 void					gc_list_push(t_gc_list **begin_list, t_gc_ptr data);
 void					gc_list_rm(t_gc_list **begin_list, size_t index);

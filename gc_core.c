@@ -6,7 +6,7 @@
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/10 10:28:35 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 14:26:42 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/01/10 15:54:56 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -107,14 +107,15 @@ void	gc_destroy(void)
 		g_gc.ref_count = 0;
 		while (++i < P_MAP_SIZE)
 		{
-			*m = &g_gc.pointer_map[i];
+			m = &g_gc.pointer_map[i];
 			while (*m)
 			{
 				tmp = *m;
 				free((void *)((*m)->data.start));
-				m = tmp->next;
+				m = &tmp->next;
 				free(tmp);
 			}
+			g_gc.pointer_map[i] = 0;
 		}
 	}
 }

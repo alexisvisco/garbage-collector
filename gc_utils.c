@@ -6,7 +6,7 @@
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/10 13:12:10 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 13:28:39 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/01/10 15:51:14 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -47,4 +47,24 @@ void	swap_ptr(uint8_t *a, uint8_t *b)
 	tmp = a;
 	a = b;
 	b = tmp;
+}
+
+void	debug_pointer_list(void)
+{
+	t_gc_list	*m;
+	int			i;
+
+	i = -1;
+	while (++i < P_MAP_SIZE)
+	{
+		m = g_gc.pointer_map[i];
+		if (m)
+			printf("g_gc.pointer_map[%d]:\n", i);
+		while (m)
+		{
+			printf("  { ptr: %p, size: %lu }\n",
+			(void *)m->data.start, m->data.size);
+			m = m->next;
+		}
+	}
 }

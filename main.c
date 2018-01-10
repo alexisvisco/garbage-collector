@@ -6,7 +6,7 @@
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/10 13:33:17 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 13:46:29 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/01/10 15:53:30 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -28,9 +28,12 @@ int		main(int argc, char *argv[])
 {
 	void *h;
 
-	gc_init(&argc, 1);
+	gc_init(&argc, 10);
 	lol(&h);
-	printf("pointer: %p\n", h);
 	gc_alloc(1);
-	gc_run();
+	debug_pointer_list();
+	printf("then:\n");
+	gc_destroy();
+	debug_pointer_list();
+	
 }
