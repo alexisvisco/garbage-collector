@@ -1,36 +1,32 @@
 /* ************************************************************************** */
 /*                                                          LE - /            */
 /*                                                              /             */
-/*   main.c                                           .::    .:/ .      .::   */
+/*   gc_alloc.c                                       .::    .:/ .      .::   */
 /*                                                 +:+:+   +:    +:  +:+:+    */
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2018/01/10 13:33:17 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 13:46:29 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Created: 2018/01/10 13:27:33 by aviscogl     #+#   ##    ##    #+#       */
+/*   Updated: 2018/01/10 13:48:58 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "gc.h"
 
-void	lol(void **h)
+void	*gc_alloc(size_t size)
 {
-	void **hello;
-	void *hi;
+	void		*ptr;
+	t_gc_ptr	p;
 
-	hello = gc_alloc(10);
-	*hello = gc_alloc(11);
-	*hello += 3;
-	*h = *hello;
-}
-
-int		main(int argc, char *argv[])
-{
-	void *h;
-
-	gc_init(&argc, 1);
-	lol(&h);
-	printf("pointer: %p\n", h);
-	gc_alloc(1);
-	gc_run();
+	if (!(ptr = malloc(size)))
+		return (NULL);
+	p = (t_gc_ptr) {
+		.start = (uintptr_t)ptr,
+		.size = size
+	};
+	gc_list_push(&g_gc.pointer_map[HASH(ptr) % P_MAP_SIZE], p);
+	g_gc.pointer_nb++;
+	if (g_gc.pointer_nb > g_gc.limit)
+		gc_run();
+	return (ptr);
 }

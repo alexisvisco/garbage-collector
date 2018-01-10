@@ -1,36 +1,50 @@
 /* ************************************************************************** */
 /*                                                          LE - /            */
 /*                                                              /             */
-/*   main.c                                           .::    .:/ .      .::   */
+/*   gc_utils.c                                       .::    .:/ .      .::   */
 /*                                                 +:+:+   +:    +:  +:+:+    */
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2018/01/10 13:33:17 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 13:46:29 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Created: 2018/01/10 13:12:10 by aviscogl     #+#   ##    ##    #+#       */
+/*   Updated: 2018/01/10 13:28:39 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "gc.h"
 
-void	lol(void **h)
+size_t	gc_ptr_index(uintptr_t ptr, t_gc_list **e)
 {
-	void **hello;
-	void *hi;
+	int			i;
+	int			j;
 
-	hello = gc_alloc(10);
-	*hello = gc_alloc(11);
-	*hello += 3;
-	*h = *hello;
+	i = -1;
+	j = 0;
+	while (++i < P_MAP_SIZE)
+	{
+		*e = g_gc.pointer_map[i];
+		while (*e)
+		{
+			if (ptr >= (*e)->data.start &&
+			(*e)->data.start + (*e)->data.size >= ptr)
+				return (j);
+			*e = (*e)->next;
+			j++;
+		}
+	}
+	return (-1);
 }
 
-int		main(int argc, char *argv[])
+void	gc_mark_stack(uint8_t *mark_bits)
 {
-	void *h;
+	gc_mark(mark_bits, g_gc.stack_start, (uint8_t *)STACK_PT);
+}
 
-	gc_init(&argc, 1);
-	lol(&h);
-	printf("pointer: %p\n", h);
-	gc_alloc(1);
-	gc_run();
+void	swap_ptr(uint8_t *a, uint8_t *b)
+{
+	uint8_t *tmp;
+
+	tmp = a;
+	a = b;
+	b = tmp;
 }

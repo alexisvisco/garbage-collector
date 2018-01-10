@@ -1,36 +1,27 @@
 /* ************************************************************************** */
 /*                                                          LE - /            */
 /*                                                              /             */
-/*   main.c                                           .::    .:/ .      .::   */
+/*   gc_free.c                                        .::    .:/ .      .::   */
 /*                                                 +:+:+   +:    +:  +:+:+    */
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2018/01/10 13:33:17 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 13:46:29 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Created: 2018/01/10 13:28:22 by aviscogl     #+#   ##    ##    #+#       */
+/*   Updated: 2018/01/10 13:38:28 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "gc.h"
 
-void	lol(void **h)
+void	gc_free(void *ptr)
 {
-	void **hello;
-	void *hi;
+	t_gc_list *lst;
 
-	hello = gc_alloc(10);
-	*hello = gc_alloc(11);
-	*hello += 3;
-	*h = *hello;
-}
-
-int		main(int argc, char *argv[])
-{
-	void *h;
-
-	gc_init(&argc, 1);
-	lol(&h);
-	printf("pointer: %p\n", h);
-	gc_alloc(1);
-	gc_run();
+	lst = g_gc.pointer_map[HASH(ptr) % P_MAP_SIZE];
+	if (lst && gc_list_exist(lst, (uintptr_t)lst))
+	{
+		gc_list_rm(&lst, (uintptr_t)lst);
+		g_gc.pointer_nb--;
+		free(ptr);
+	}
 }

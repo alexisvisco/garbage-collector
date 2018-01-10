@@ -1,3 +1,16 @@
+/* ************************************************************************** */
+/*                                                          LE - /            */
+/*                                                              /             */
+/*   gc_lst.c                                         .::    .:/ .      .::   */
+/*                                                 +:+:+   +:    +:  +:+:+    */
+/*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
+/*                                                 #+#   #+    #+    #+#      */
+/*   Created: 2018/01/10 10:28:17 by aviscogl     #+#   ##    ##    #+#       */
+/*   Updated: 2018/01/10 13:42:04 by aviscogl    ###    #+. /#+    ###.fr     */
+/*                                                         /                  */
+/*                                                        /                   */
+/* ************************************************************************** */
+
 #include "gc.h"
 
 int		gc_list_exist(t_gc_list *begin_list, uintptr_t ptr)
@@ -25,7 +38,7 @@ void	gc_list_push(t_gc_list **begin_list, t_gc_ptr data)
 	*begin_list = elem;
 }
 
-void		gc_list_rm(t_gc_list **begin_list, size_t index)
+void	gc_list_rm(t_gc_list **begin_list, size_t index)
 {
 	t_gc_list	*node;
 	t_gc_list	*prev;
@@ -43,7 +56,6 @@ void		gc_list_rm(t_gc_list **begin_list, size_t index)
 				prev->next = node->next;
 			else
 				*begin_list = node->next;
-			printf("something was remove !\n");
 			free(node);
 			return ;
 		}
