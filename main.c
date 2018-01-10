@@ -6,14 +6,14 @@
 /*   By: aviscogl <aviscogl@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/01/10 13:33:17 by aviscogl     #+#   ##    ##    #+#       */
-/*   Updated: 2018/01/10 15:53:30 by aviscogl    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/01/10 16:03:20 by aviscogl    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "gc.h"
 
-void	lol(void **h)
+void	sample(void **h)
 {
 	void **hello;
 	void *hi;
@@ -28,12 +28,10 @@ int		main(int argc, char *argv[])
 {
 	void *h;
 
-	gc_init(&argc, 10);
-	lol(&h);
+	gc_init(&argc, 1);
+
+	sample(&h);
 	gc_alloc(1);
-	debug_pointer_list();
-	printf("then:\n");
-	gc_destroy();
-	debug_pointer_list();
 	
+	gc_destroy();
 }
