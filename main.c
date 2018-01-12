@@ -13,6 +13,9 @@
 
 #include "gc.h"
 
+#define malloc(x) gc_alloc(x)
+#define free(x)
+
 void	sample(void **h)
 {
 	void **hello;
@@ -27,11 +30,17 @@ void	sample(void **h)
 int		main(int argc, char *argv[])
 {
 	void *h;
+	int *e;
 
 	gc_init(&argc, 1);
 
 	sample(&h);
-	gc_alloc(1);
-	
+	debug_pointer_list();
+	printf("-------\n");
+	h = NULL;
+	e = gc_alloc(1);
+	*e = 17;
+	debug_pointer_list();
+	printf("%d\n", *e);
 	gc_destroy();
 }

@@ -15,18 +15,23 @@
 
 void	*gc_alloc(size_t size)
 {
-	void		*ptr;
+	uintptr_t	ptr;
 	t_gc_ptr	p;
 
-	if (!(ptr = malloc(size)))
+	if (!(ptr = (uintptr_t)malloc(size)))
 		return (NULL);
 	p = (t_gc_ptr) {
-		.start = (uintptr_t)ptr,
-		.size = size
+		.start = ptr,
+		.size = size,
+		.marked = false
 	};
+	if (g_gc.min > ptr)
+		g_gc.min = ptr;
+	else if (g_gc.max < ptr + size)
+		g_gc.max = ptr + size;
 	gc_list_push(&g_gc.pointer_map[HASH(ptr) % P_MAP_SIZE], p);
 	g_gc.pointer_nb++;
-	if (g_gc.pointer_nb > g_gc.limit)
+	if (g_gc.pointer_nb >= g_gc.limit)
 		gc_run();
-	return (ptr);
+	return ((void *)ptr);
 }

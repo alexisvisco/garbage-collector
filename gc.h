@@ -17,18 +17,24 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <stdint.h>
+# include <stdbool.h>
+# include <limits.h>
 # include <alloca.h>
 
 # define P_MAP_SIZE 64
-# define STACK_PT ({ char sp; &sp; })
 # define HASH(ptr) ((uintptr_t)ptr >> 3)
-# define SET_BIT(l, i, v) (l[i/8] |= 1 << (i % 8))
-# define GET_BIT(l, i) ((l[i/8] >> (i % 8)) & 1)
+
+# ifdef DEBUG
+#  define DEBUGP(...) printf("GC: " __VA_ARGS__)
+# else
+#  define DEBUGP(...)
+# endif
 
 typedef struct			s_gc_ptr
 {
 	uintptr_t			start;
 	size_t				size;
+	bool 				marked;
 }						t_gc_ptr;
 
 typedef struct			s_gc_list
@@ -44,21 +50,24 @@ typedef struct			s_gc
 	size_t				pointer_nb;
 	size_t				limit;
 	size_t				ref_count;
+	uintptr_t			min;
+	uintptr_t			max;
 }						t_gc;
 
 extern t_gc g_gc;
 
 void					gc_init(void *ptr, size_t limit);
 void					*gc_alloc(size_t size);
-void					gc_mark(uint8_t *mark_bits, uint8_t *s, uint8_t *e);
-size_t					gc_ptr_index(uintptr_t ptr, t_gc_list **e);
-void					gc_mark_stack(uint8_t *mark_bits);
+void					gc_mark(uint8_t *s, uint8_t *e);
+t_gc_list				*gc_ptr_index(uintptr_t ptr);
+t_gc_list				*gc_ptr_list_search(uintptr_t ptr, t_gc_list *e);
+void					gc_mark_stack();
 void					gc_run();
-void					gc_sweep(uint8_t *mark_bits);
+void					gc_sweep();
 void					gc_free(void *ptr);
 void					gc_destroy(void);
 
-void					swap_ptr(uint8_t *a, uint8_t *b);
+void					swap_ptr(uint8_t **a, uint8_t **b);
 void					debug_pointer_list(void);
 
 void					gc_list_push(t_gc_list **begin_list, t_gc_ptr data);
