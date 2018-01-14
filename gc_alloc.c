@@ -13,7 +13,7 @@
 
 #include "gc.h"
 
-void	*gc_alloc(size_t size)
+void	*gc_alloc(size_t size, char *file, int line)
 {
 	uintptr_t	ptr;
 	t_gc_ptr	p;
@@ -23,15 +23,33 @@ void	*gc_alloc(size_t size)
 	p = (t_gc_ptr) {
 		.start = ptr,
 		.size = size,
-		.marked = false
+		.marked = true,
+	# ifdef DEBUG
+		.file = file,
+		.line = line
+	# endif
 	};
 	if (g_gc.min > ptr)
 		g_gc.min = ptr;
-	else if (g_gc.max < ptr + size)
+	if (g_gc.max < ptr + size)
 		g_gc.max = ptr + size;
+	printf("ptr: %p, min: %p, max %p\n", ptr, g_gc.min, g_gc.max);
 	gc_list_push(&g_gc.pointer_map[HASH(ptr) % P_MAP_SIZE], p);
 	g_gc.pointer_nb++;
 	if (g_gc.pointer_nb >= g_gc.limit)
 		gc_run();
 	return ((void *)ptr);
+}
+
+void	gc_register(void *ptr, size_t size, char *file, int line)
+{
+	gc_list_push(&g_gc.globals, (t_gc_ptr) {
+		.start = (uintptr_t)ptr,
+		.size = size,
+		.marked = true,
+	# ifdef DEBUG
+		.file = file,
+		.line = line
+	# endif
+	});
 }

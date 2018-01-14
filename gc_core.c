@@ -29,7 +29,8 @@ void	gc_init(void *ptr, size_t limit)
 			.ref_count = 1,
 			.limit = limit,
 			.min = UINTPTR_MAX,
-			.max = 0
+			.max = 0,
+			.globals = NULL
 		};
 	}
 }
@@ -67,12 +68,9 @@ void	gc_sweep(void)
 		{
 			if (!e->data.marked)
 			{
-				DEBUGP("Free %p with size %zu\n", (void *)e->data.start,
-					e->data.size);
-				free((void *)e->data.start);
+				gc_mfree(e);
 				e = e->next;
 				gc_list_rm(&g_gc.pointer_map[i], k);
-				g_gc.pointer_nb--;
 			}
 			else
 			{

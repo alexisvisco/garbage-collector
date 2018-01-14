@@ -53,9 +53,17 @@ t_gc_list	*gc_ptr_list_search(uintptr_t ptr, t_gc_list *e)
 
 void	gc_mark_stack(void)
 {
-	uint8_t tmp;
+	uint8_t		tmp;
+	t_gc_list	*e;
 
 	gc_mark(g_gc.stack_start, &tmp);
+	e = g_gc.globals;
+	while (e)
+	{
+		gc_mark((uint8_t *)e->data.start,
+				(uint8_t *)(e->data.start + e->data.size));
+		e = e->next;
+	}
 }
 
 void	swap_ptr(uint8_t **a, uint8_t **b)
@@ -73,14 +81,15 @@ void	debug_pointer_list(void)
 	int			i;
 
 	i = -1;
+	printf("pointers lists:\n");
 	while (++i < P_MAP_SIZE)
 	{
 		m = g_gc.pointer_map[i];
 		if (m)
-			printf("g_gc.pointer_map[%d]:\n", i);
+			printf(" - g_gc.pointer_map[%d]:\n", i);
 		while (m)
 		{
-			printf("  { ptr: %p, size: %lu, marked: %d }\n",
+			printf("   { ptr: %p, size: %lu, marked: %d }\n",
 			(void *)m->data.start, m->data.size, m->data.marked);
 			m = m->next;
 		}

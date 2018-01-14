@@ -21,7 +21,15 @@ void	gc_free(void *ptr)
 	if (lst && gc_list_exist(lst, (uintptr_t)lst))
 	{
 		gc_list_rm(&lst, (uintptr_t)lst);
-		g_gc.pointer_nb--;
-		free(ptr);
+		gc_mfree(lst);
 	}
+}
+
+void	gc_mfree(t_gc_list *e)
+{
+	DEBUGP("Free %p with size %zu allocated in %s:%d\n",
+		(void *)e->data.start, e->data.size, e->data.file,
+		e->data.line);
+	free((void *)e->data.start);
+	g_gc.pointer_nb--;
 }

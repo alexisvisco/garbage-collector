@@ -13,34 +13,24 @@
 
 #include "gc.h"
 
-#define malloc(x) gc_alloc(x)
-#define free(x)
-
-void	sample(void **h)
-{
-	void **hello;
-	void *hi;
-
-	hello = gc_alloc(10);
-	*hello = gc_alloc(11);
-	*hello += 3;
-	*h = *hello;
-}
+char *global_test;
 
 int		main(int argc, char *argv[])
 {
-	void *h;
-	int *e;
-
 	gc_init(&argc, 1);
 
-	sample(&h);
+	GC_REGISTER(global_test);
+	global_test = GC_ALLOC(sizeof(char) * 10);
+	global_test[0] = 'a';
+	global_test[1] = 'b';
+	global_test[2] = 'c';
+	global_test[3] = '\0';
+	global_test = NULL;
+
+	gc_run();
+	gc_run();
+
+	printf("global_test = %s\n", global_test);
 	debug_pointer_list();
-	printf("-------\n");
-	h = NULL;
-	e = gc_alloc(1);
-	*e = 17;
-	debug_pointer_list();
-	printf("%d\n", *e);
 	gc_destroy();
 }
