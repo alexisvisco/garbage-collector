@@ -23,17 +23,17 @@ void	*gc_alloc(size_t size, char *file, int line)
 	p = (t_gc_ptr) {
 		.start = ptr,
 		.size = size,
-		.marked = true,
+		.marked = 3,
 	# ifdef DEBUG
 		.file = file,
 		.line = line
 	# endif
 	};
+	DEBUGP("Alloc %p with size %d in %s:%d\n", (void *)ptr, size, file, line);
 	if (g_gc.min > ptr)
 		g_gc.min = ptr;
 	if (g_gc.max < ptr + size)
 		g_gc.max = ptr + size;
-	printf("ptr: %p, min: %p, max %p\n", ptr, g_gc.min, g_gc.max);
 	gc_list_push(&g_gc.pointer_map[HASH(ptr) % P_MAP_SIZE], p);
 	g_gc.pointer_nb++;
 	if (g_gc.pointer_nb >= g_gc.limit)

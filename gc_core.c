@@ -44,7 +44,7 @@ void	gc_mark(uint8_t *start, uint8_t *end)
 	while (start < end)
 	{
 		index = gc_ptr_index((uintptr_t)(*((void **)start)));
-		if (index && !index->data.marked)
+		if (index && index->data.marked != true)
 		{
 			index->data.marked = true;
 			gc_mark((uint8_t *)(index->data.start),
@@ -60,6 +60,7 @@ void	gc_sweep(void)
 	int         k;
 	t_gc_list	*e;
 
+	i = 0;
 	while (++i < P_MAP_SIZE)
 	{
 		e = g_gc.pointer_map[i];
@@ -92,7 +93,7 @@ void	gc_run(void)
 void	gc_destroy(void)
 {
 	int			i;
-	t_gc_list	**m;
+	t_gc_list	*m;
 	t_gc_list	*tmp;
 
 	i = -1;
@@ -102,12 +103,12 @@ void	gc_destroy(void)
 		g_gc.ref_count = 0;
 		while (++i < P_MAP_SIZE)
 		{
-			m = &g_gc.pointer_map[i];
-			while (*m)
+			m = g_gc.pointer_map[i];
+			while (m)
 			{
-				tmp = *m;
-				free((void *)((*m)->data.start));
-				m = &tmp->next;
+				tmp = m;
+				free((void *)(m->data.start));
+				m = m->next;
 				free(tmp);
 			}
 			g_gc.pointer_map[i] = 0;

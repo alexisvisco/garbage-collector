@@ -27,12 +27,12 @@ t_gc_list	*gc_ptr_index(uintptr_t ptr)
 
 	if ((e = gc_ptr_list_search(ptr, g_gc.pointer_map[h])))
 		return (e);
-	while (++i + h < P_MAP_SIZE && i - h > 0)
+	while (++i + h < P_MAP_SIZE || (h - i > 0))
 	{
-		if (!(h - i < 0)
+		if ((h - i > 0)
 			&& (e = gc_ptr_list_search(ptr, g_gc.pointer_map[h - i])))
 			return (e);
-		if (!(h + i >= P_MAP_SIZE)
+		if ((h + i < P_MAP_SIZE)
 			&& (e = gc_ptr_list_search(ptr, g_gc.pointer_map[h + i])))
 			return (e);
 	}
